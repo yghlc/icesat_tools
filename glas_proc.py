@@ -19,7 +19,7 @@ from osgeo import gdal
 from pygeotools.lib import timelib, geolib, iolib, malib, filtlib
 
 #This is needed for LULC products
-import dem_mask
+# import dem_mask
 
 #Before running, download all GLAH14 products
 #lftp ftp://n5eil01u.ecs.nsidc.org/DP5/GLAS/
@@ -91,18 +91,22 @@ def main():
     dt_o = timelib.dt2o(dt)
     #dts = timelib.np_print_dt(dt)
     #dt_decyear = timelib.np_dt2decyear(dt)
-    dt_int = np.array([ts.strftime('%Y%m%d') for ts in dt], dtype=long)
+    dt_int = np.array([ts.strftime('%Y%m%d') for ts in dt], dtype=np.int64)
 
     lat = np.ma.masked_equal(f.get('Data_40HZ/Geolocation/d_lat')[:], 1.7976931348623157e+308)
     lon = np.ma.masked_equal(f.get('Data_40HZ/Geolocation/d_lon')[:], 1.7976931348623157e+308)
-    lon = geolib.lon360to180(lon)
+    # not working for beiluhe, Tibetan Plateau
+    # lon = geolib.lon360to180(lon)
     z = np.ma.masked_equal(f.get('Data_40HZ/Elevation_Surfaces/d_elev')[:], 1.7976931348623157e+308)
 
     print('Input: %i' % z.count())
+    print('max lax %lf, min lat %lf' % (lat.max(), lat.min()))
+    print('max lon %lf, min lon %lf' % (lon.max(), lon.min()))
 
     #Now spatial filter - should do this up front
     x = lon
     y = lat
+    extent = [float(item) for item in extent]
     xmin, xmax, ymin, ymax = extent
     #This is True if point is within extent
     valid_idx = ((x >= xmin) & (x <= xmax) & (y >= ymin) & (y <= ymax))
@@ -255,7 +259,7 @@ def main():
     #This will sample land-use/land-cover or percent bareground products
     #Can be used to isolate points over exposed rock
     #if args.rockfilter: 
-    if True:
+    if False:
         #This should automatically identify appropriate LULC source based on refdem extent
         lulc_source = dem_mask.get_lulc_source(dem_ds)
         #Looks like NED extends beyond NCLD, force use NLCD for conus
