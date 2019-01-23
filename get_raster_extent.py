@@ -61,8 +61,20 @@ def GetLatLon(line):
         Lat = -1*Lat
     return Lat, Lon
 
+def get_lat_lon_extent(file_name):
+    """
+    get extent of a raster file
+    :param file_name:
+    :return: xmin xmax ymin ymax, x is lon, y is lat
+    """
+    CornerLats, CornerLons = GetCornerCoordinates(file_name)
+    # UpperLeft, LowerLeft, UpperRight, LowerRight, Centre
+    # print(CornerLats)
+    # print(CornerLons)
+    # print('xmin xmax ymin ymax:')
+    # print(min(CornerLons), max(CornerLons), min(CornerLats), max(CornerLats))
 
-
+    return min(CornerLons), max(CornerLons), min(CornerLats), max(CornerLats)
 
 def getparser():
     parser = argparse.ArgumentParser(description="get the extent (lat, lon) of a raster file using GDAL,")

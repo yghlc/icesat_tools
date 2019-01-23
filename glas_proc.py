@@ -52,7 +52,8 @@ def getparser():
     site_choices = geolib.site_dict.keys()
     parser.add_argument('sitename', type=str, choices=site_choices, help='Site name')
     #parser.add_argument('--rockfilter', action='store_true', help='Only output points over exposed rock using NLCD or bareground')
-    parser.add_argument('-extent', type=str, default=None, help='Specify output spatial extent ("xmin xmax ymin ymax"). Otherwise, use default specified for sitename in pygeotools/lib/geolib')
+    parser.add_argument('-extent', type=str, default=None, help='Specify output spatial extent ("xmin xmax ymin ymax") or. "read" to read from the raster'
+                                                                'Otherwise, use default specified for sitename in pygeotools/lib/geolib')
     parser.add_argument('-refdem_fn', type=str, default=None, help='Specify alternative reference DEM for filtering. Otherwise use NED or SRTM')
     return parser
 
@@ -65,7 +66,12 @@ def main():
     #User-specified output extent
     #Note: not checked, untested
     if args.extent is not None:
-        extent = (args.extent).split()
+        if args.extent == 'read':
+            import get_raster_extent
+            extent = get_raster_extent.get_lat_lon_extent(args.refdem_fn)
+        else:
+            extent = (args.extent).split()
+            extent = [float(item) for item in extent]
     else:
         extent = (geolib.site_dict[sitename]).extent
     if args.refdem_fn is not None:
@@ -106,7 +112,7 @@ def main():
     #Now spatial filter - should do this up front
     x = lon
     y = lat
-    extent = [float(item) for item in extent]
+
     xmin, xmax, ymin, ymax = extent
     #This is True if point is within extent
     valid_idx = ((x >= xmin) & (x <= xmax) & (y >= ymin) & (y <= ymax))
