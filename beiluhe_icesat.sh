@@ -17,8 +17,9 @@ dem_name_no_ext="${dem_name%.*}"
 echo $dem_name_no_ext
 #refdem_fn=~/Data/Qinghai-Tibet/beiluhe/DEM/srtm_30/beiluhe_strm30.tif
 #icesat_fn=~/Data/Qinghai-Tibet/beiluhe/icesat/GLAH14_634_2107_002_0281_0_01_0001.H5
-icesat_fn=~/Data/Qinghai-Tibet/beiluhe/icesat/GLAH14_634_1102_001_0099_0_01_0001.H5
+#icesat_fn=~/Data/Qinghai-Tibet/beiluhe/icesat/GLAH14_634_1102_001_0099_0_01_0001.H5
 
+icesat_dir=~/Data/Qinghai-Tibet/beiluhe/icesat
 
 ##get the extent using ./get_raster_extent.py ${refdem_fn}
 #ext='"92.536475 93.22801111111112 34.791311111111106 35.291127777777774"'
@@ -36,7 +37,7 @@ icesat_fn=~/Data/Qinghai-Tibet/beiluhe/icesat/GLAH14_634_1102_001_0099_0_01_0001
 # -refdem_fn ${refdem_fn}
 
 
-parallel --progress --delay 1 -j 16 "~/codes/PycharmProjects/yghlc_icesat_tools/glas_proc.py {} hma -extent read  -refdem_fn ${refdem_fn}" ::: *.H5
+parallel --progress --delay 1 -j 16 "~/codes/PycharmProjects/yghlc_icesat_tools/glas_proc.py {} hma -extent read  -refdem_fn ${refdem_fn}" ::: ${icesat_dir}/*.H5
 #Combine output
 
 for ext in hma.csv hma_refdemfilt.csv ; do
